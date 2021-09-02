@@ -1,7 +1,3 @@
-## Scrolly Drive
-This template is an extension of the Mapbox "scrollytelling" template and is meant for data journalists and digital storytellers of any kind.
-
-Full instructions on use can be found [here](http://formerspatial.com/scrolly-drive).
-
-## Prerequisites
-Please familiarize yourself with Mapbox's template documentation [here](https://github.com/mapbox/storytelling).
+## The minute we fall silent
+“Stories are critical, Kirabo. The minute we fall silent, someone will fill the silence for us.”
+― Jennifer Nansubuga Makumbi, A Girl Is a Body of Water
