@@ -1,0 +1,26 @@
+{
+"type": "FeatureCollection",
+"name": "points",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null, "location": "Bugoma Central Forest Reserve", "type": null }, "geometry": { "type": "Point", "coordinates": [ 30.970238627283944, 1.288957855851337 ] } },
+{ "type": "Feature", "properties": { "id": 1, "location": "Biiso", "type": "security training, legal training" }, "geometry": { "type": "Point", "coordinates": [ 31.41848776568472, 1.760907287683191 ] } },
+{ "type": "Feature", "properties": { "id": 2, "location": "Adjumani", "type": "security training" }, "geometry": { "type": "Point", "coordinates": [ 31.790702912986074, 3.37695216176146 ] } },
+{ "type": "Feature", "properties": { "id": 3, "location": "Nebbi", "type": "security training, institution" }, "geometry": { "type": "Point", "coordinates": [ 31.089967509551542, 2.478595306484844 ] } },
+{ "type": "Feature", "properties": { "id": 4, "location": "Masindi", "type": "security training" }, "geometry": { "type": "Point", "coordinates": [ 31.71797337731385, 1.685499309678718 ] } },
+{ "type": "Feature", "properties": { "id": 5, "location": "Buseruka Oil Refinery", "type": "security training" }, "geometry": { "type": "Point", "coordinates": [ 31.136221047533137, 1.548098761324188 ] } },
+{ "type": "Feature", "properties": { "id": 6, "location": "Hoima", "type": "security training, institution" }, "geometry": { "type": "Point", "coordinates": [ 31.353865942102502, 1.432566997129301 ] } },
+{ "type": "Feature", "properties": { "id": 7, "location": "Ngwedo", "type": "security training, legal training, community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.461153201299112, 2.132956853154122 ] } },
+{ "type": "Feature", "properties": { "id": 8, "location": "Kilyango", "type": "security training, community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.501060095817664, 2.233145493896625 ] } },
+{ "type": "Feature", "properties": { "id": 9, "location": "Nyamasoga", "type": "legal training, community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.390906352612852, 1.76606052021511 ] } },
+{ "type": "Feature", "properties": { "id": 10, "location": "Avogera", "type": "community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.510171277205025, 2.202357776536928 ] } },
+{ "type": "Feature", "properties": { "id": 11, "location": "Panyamur", "type": "community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.31834770133888, 2.242216852644246 ] } },
+{ "type": "Feature", "properties": { "id": 12, "location": "Karongo", "type": "community dialogue" }, "geometry": { "type": "Point", "coordinates": [ 31.494963320207532, 1.686678502827666 ] } },
+{ "type": "Feature", "properties": { "id": 13, "location": "Arua", "type": "institution" }, "geometry": { "type": "Point", "coordinates": [ 30.910360497960813, 3.022540008361185 ] } },
+{ "type": "Feature", "properties": { "id": 14, "location": "Pakwach", "type": "institution" }, "geometry": { "type": "Point", "coordinates": [ 31.494851379409418, 2.460965007435577 ] } },
+{ "type": "Feature", "properties": { "id": null, "location": "Hoima Sugar Ltd", "type": null }, "geometry": { "type": "Point", "coordinates": [ 31.184733152080724, 1.242532911819938 ] } },
+{ "type": "Feature", "properties": { "id": null, "location": "Rwamutonga", "type": null }, "geometry": { "type": "Point", "coordinates": [ 31.227704344144314, 1.436561787363639 ] } },
+{ "type": "Feature", "properties": { "id": null, "location": "Tilenga Oil Fields Development Project", "type": null }, "geometry": { "type": "Point", "coordinates": [ 31.451244921546166, 2.195189416704468 ] } },
+{ "type": "Feature", "properties": { "id": null, "location": "Ramogi IDPs camp", "type": null }, "geometry": { "type": "Point", "coordinates": [ 31.057756374682931, 2.042993434455552 ] } }
+]
+}
