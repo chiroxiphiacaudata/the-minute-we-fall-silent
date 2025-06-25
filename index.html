@@ -5,8 +5,13 @@
   <meta charset='utf-8' />
   <title>Along the shores of Itaka Lya Mwitanzige</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+
+  <link rel="preload" href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" as="style"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css" rel="stylesheet" />
+  </noscript>
+
   <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src='https://unpkg.com/@turf/turf@3.7.3/turf.min.js'></script>
@@ -16,6 +21,11 @@
   <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
   <link rel="stylesheet" href="dist/styles.css" />
   <style>
+    #map {
+      width: 100vw;
+      height: 100vh;
+      min-height: 400px;
+    }
   </style>
 </head>
 
@@ -23,10 +33,12 @@
 
   <div id="map"></div>
   <div id="story"></div>
+
   <script src="./config.js"></script>
   <script src="./js/drive.js"></script>
   <script type="text/javascript" src="https://api.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
   <script type="module" type="text/javascript" src="dist/index.js"></script>
+
   <script>
     var layerTypes = {
       'fill': ['fill-opacity'],
@@ -51,7 +63,7 @@
 
     function setLayerOpacity(layer) {
       var paintProps = getLayerPaintType(layer.layer);
-      paintProps.forEach(function(prop) {
+      paintProps.forEach(function (prop) {
         map.setPaintProperty(layer.layer, prop, layer.opacity);
       });
     }
@@ -61,7 +73,11 @@
     features.classList.add(alignments[config.alignment]);
     features.setAttribute('id', 'features');
 
+    var headerbox = document.createElement('div');
+
     var header = document.createElement('div');
+    header.setAttribute('id', 'header');
+    headerbox.appendChild(header);
 
     if (config.title) {
       var titleText = document.createElement('div');
@@ -70,18 +86,18 @@
       header.appendChild(titleText);
     }
 
-    if (config.image) {
-      var image = new Image();
-      image.src = config.image;
-      image.setAttribute('id', 'image');
-      header.appendChild(image);
-    }
-
     if (config.subtitle) {
       var subtitleText = document.createElement('div');
       subtitleText.innerText = config.subtitle;
       subtitleText.setAttribute('id', 'subtitleText');
       header.appendChild(subtitleText);
+    }
+
+    if (config.image) {
+      var image = new Image();
+      image.src = config.image;
+      image.setAttribute('id', 'image');
+      header.appendChild(image);
     }
 
     if (config.bylineDescription) {
@@ -93,7 +109,7 @@
 
     if (config.byline) {
       var bylineText = document.createElement('div');
-      bylineText.innerText = config.byline;
+      bylineText.innerHTML = config.byline;
       bylineText.setAttribute('id', 'bylineText');
       header.appendChild(bylineText);
     }
@@ -105,10 +121,10 @@
       header.appendChild(bylineTextContinue);
     }
 
-    if (header.innerText.length > 0) {
-      header.classList.add(config.theme);
-      header.setAttribute('id', 'header');
-      story.appendChild(header);
+    if (headerbox.innerText.length > 0) {
+      headerbox.classList.add(config.theme);
+      headerbox.setAttribute('id', 'headerbox');
+      story.appendChild(headerbox);
     }
 
     config.chapters.forEach((record, idx) => {
@@ -130,6 +146,7 @@
       if (record.description) {
         var story = document.createElement('p');
         story.innerHTML = record.description;
+        story.setAttribute('id', 'description');
         chapter.appendChild(story);
       }
 
@@ -225,252 +242,267 @@
 
     var minimap;
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       $.ajax({
-        // url:"./data/highwaydrive.geojson",
         url: "./data/pathline.geojson",
         dataType: "json",
-        success: function(data) {
+        success: function (data) {
           console.log('data', data.features[0]);
           routeData = data;
         },
-        error: function() {
+        error: function () {
           console.log('error loading data');
         }
       });
     });
 
-    map.on("load", function() {
+    function initMap() {
+      map.on("load", function () {
 
-      let w = window.innerWidth;
-      let initBounds = routeData.features[0].geometry.coordinates;
+        let w = window.innerWidth;
+        let initBounds = routeData.features[0].geometry.coordinates;
 
-      if (followPoint === false) {
-        var bounds = initBounds.reduce(function(bounds, coord) {
-          return bounds.extend(coord);
-        }, new mapboxgl.LngLatBounds(initBounds[0], initBounds[0]));
+        if (followPoint === false) {
+          var bounds = initBounds.reduce(function (bounds, coord) {
+            return bounds.extend(coord);
+          }, new mapboxgl.LngLatBounds(initBounds[0], initBounds[0]));
 
-        if (w >= 500) {
-          map.fitBounds(bounds, {
-            padding: {
-              top: 150,
-              bottom: 150,
-              right: -100,
-              left: 200
-            },
-            duration: 0
-          });
+          if (w >= 500) {
+            map.fitBounds(bounds, {
+              padding: {
+                top: 150,
+                bottom: 150,
+                right: -100,
+                left: 200
+              },
+              duration: 0
+            });
+          } else {
+            map.fitBounds(bounds, {
+              padding: 20,
+              duration: 0
+            });
+          }
         } else {
-          map.fitBounds(bounds, {
-            padding: 20,
-            duration: 0
-          });
+          map.setZoom(followZoomLevel);
+          map.setBearing(followBearing);
+          map.setPitch(followPitch);
         }
-      } else {
-        map.setZoom(followZoomLevel);
-        map.setBearing(followBearing);
-        map.setPitch(followPitch);
-      }
 
-      map.addSource('lineSource', {
-        "type": "geojson",
-        "data": geojsonPoint
-      });
+        map.addSource('lineSource', {
+          "type": "geojson",
+          "data": geojsonPoint
+        });
 
-      map.addSource('pointSource', {
-        "type": "geojson",
-        "data": geojsonPoint
-      });
+        map.addSource('pointSource', {
+          "type": "geojson",
+          "data": geojsonPoint
+        });
 
-      map.addLayer({
-        "id": "animatedLine",
-        "type": "line",
-        "source": "lineSource",
-        'paint': {
-          'line-opacity': 1,
-          'line-color': 'red',
-          'line-width': 2.5
-        },
-        'layout': {
-          'visibility': 'none'
-        }
-      });
-
-      map.addLayer({
-        "id": "animatedPoint",
-        "type": "circle",
-        "source": "pointSource",
-        'paint': {
-          'circle-radius': 4,
-          //'circle-opacity': 1,
-          'circle-color': '#c99393'
-        },
-        'layout': {
-          // 'visibility': 'none'
-        }
-      });
-
-      map.setPaintProperty('animatedPoint', 'circle-color', 'red')
-      map.setPaintProperty('animatedPoint', 'circle-radius', 3)
-      var framesPerSecond = 30;
-      var multiplier = .1;
-      var opacity = 1;
-      var circleRadius = 0.5;
-
-      function pulseMarker(timestamp) {
-        setTimeout(function() {
-          requestAnimationFrame(pulseMarker)
-          multiplier += .2;
-          opacity -= (.5 / framesPerSecond);
-          circleRadius += (10 / framesPerSecond);
-
-          map.setPaintProperty('animatedPoint', 'circle-opacity', opacity)
-          map.setPaintProperty('animatedPoint', 'circle-radius', circleRadius)
-
-          if (opacity <= 0.7) {
-            opacity = 1;
-            circleRadius = 4;
+        map.addLayer({
+          "id": "animatedLine",
+          "type": "line",
+          "source": "lineSource",
+          'paint': {
+            'line-opacity': 1,
+            'line-color': 'red',
+            'line-width': 2.5
+          },
+          'layout': {
+            'visibility': 'none'
           }
+        });
 
-        }, 1500 / framesPerSecond);
-      }
-
-      pulseMarker(0);
-
-
-      // setup the instance, pass callback functions
-      scroller
-        .setup({
-          step: '.step',
-          offset: 0.5,
-          progress: true
-        })
-        .onStepEnter(response => {
-          var chapter = config.chapters.find(chap => chap.id === response.element.id);
-          response.element.classList.add('active');
-          // map.flyTo(chapter.location);
-          if (config.showMarkers) {
-            marker.setLngLat(chapter.location.center);
+        map.addLayer({
+          "id": "animatedPoint",
+          "type": "circle",
+          "source": "pointSource",
+          'paint': {
+            'circle-radius': 4,
+            //'circle-opacity': 1,
+            'circle-color': '#c99393'
+          },
+          'layout': {
+            // 'visibility': 'none'
           }
-          if (chapter.onChapterEnter.length > 0) {
-            chapter.onChapterEnter.forEach(setLayerOpacity);
+        });
+
+        map.setPaintProperty('animatedPoint', 'circle-color', 'red')
+        map.setPaintProperty('animatedPoint', 'circle-radius', 3)
+        var framesPerSecond = 30;
+        var multiplier = .1;
+        var opacity = 1;
+        var circleRadius = 0.5;
+
+        function pulseMarker(timestamp) {
+          setTimeout(function () {
+            requestAnimationFrame(pulseMarker)
+            multiplier += .2;
+            opacity -= (.5 / framesPerSecond);
+            circleRadius += (10 / framesPerSecond);
+
+            map.setPaintProperty('animatedPoint', 'circle-opacity', opacity)
+            map.setPaintProperty('animatedPoint', 'circle-radius', circleRadius)
+
+            if (opacity <= 0.7) {
+              opacity = 1;
+              circleRadius = 4;
+            }
+
+          }, 1500 / framesPerSecond);
+        }
+
+        pulseMarker(0);
+
+
+        // setup the instance, pass callback functions
+        scroller
+          .setup({
+            step: '.step',
+            offset: 0.5,
+            progress: true
+          })
+          .onStepEnter(response => {
+            var chapter = config.chapters.find(chap => chap.id === response.element.id);
+            response.element.classList.add('active');
+            // map.flyTo(chapter.location);
+            if (config.showMarkers) {
+              marker.setLngLat(chapter.location.center);
+            }
+            if (chapter.onChapterEnter.length > 0) {
+              chapter.onChapterEnter.forEach(setLayerOpacity);
+            }
+          })
+          .onStepExit(response => {
+            var chapter = config.chapters.find(chap => chap.id === response.element.id);
+            response.element.classList.remove('active');
+            if (chapter.onChapterExit.length > 0) {
+              chapter.onChapterExit.forEach(setLayerOpacity);
+            }
+          })
+          .onStepProgress(handleStepProgress);
+
+        createLine();
+
+
+        ////////////////////////////
+        ////////////////////////////
+        map.addSource('ngetha', {
+          type: 'geojson',
+          // Use a URL for the value for the `data` property.
+          data: './data/points.geojson'
+        });
+
+        map.addLayer({
+          'id': 'ngetha',
+          'type': 'circle',
+          'source': 'ngetha',
+          'paint': {
+            'circle-radius': 6,
+            'circle-stroke-width': 2,
+            'circle-color': 'rgba(226, 106, 106, 0)',
+            'circle-stroke-color': 'white'
           }
-        })
-        .onStepExit(response => {
-          var chapter = config.chapters.find(chap => chap.id === response.element.id);
-          response.element.classList.remove('active');
-          if (chapter.onChapterExit.length > 0) {
-            chapter.onChapterExit.forEach(setLayerOpacity);
+        });
+
+        map.addLayer({
+          'id': 'ngetha-labels',
+          'type': 'symbol',
+          'source': 'ngetha',
+          'layout': {
+            'text-field': ['get', 'location'],
+            'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+            //'text-radial-offset': 0.5,
+            'text-justify': 'auto',
+            'text-size': 12,
+            'text-offset': [0, -1.1]
+            //'icon-image': ['get', 'icon']
+          },
+          'paint': {
+            "text-color": "white"
           }
-        })
-        .onStepProgress(handleStepProgress);
-
-      createLine();
+        });
 
 
-      ////////////////////////////
-      ////////////////////////////
-      map.addSource('ngetha', {
-        type: 'geojson',
-        // Use a URL for the value for the `data` property.
-        data: './data/points.geojson'
+        map.addSource('extractive', {
+          type: 'geojson',
+          // Use a URL for the value for the `data` property.
+          data: './data/extractive.geojson'
+        });
+
+        map.addLayer({
+          'id': 'extractive',
+          'type': 'circle',
+          'source': 'extractive',
+          'paint': {
+            'circle-radius': 3,
+            'circle-stroke-width': 2,
+            'circle-color': 'rgba(226, 106, 106, 0)',
+            'circle-stroke-color': 'yellow'
+          }
+        });
+
+        map.addLayer({
+          'id': 'extractive-labels',
+          'type': 'symbol',
+          'source': 'extractive',
+          'layout': {
+            'text-field': ['get', 'type'],
+            'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+            //'text-radial-offset': 0.5,
+            'text-justify': 'auto',
+            'text-size': 11,
+            'text-offset': [0, -1.1]
+            //'icon-image': ['get', 'icon']
+          },
+          'paint': {
+            "text-color": "yellow"
+          }
+        });
+
+        ////////////////////////////
+        ////////////////////////////
+
+        map.moveLayer('animatedLine', 'animatedPoint');
+
+        minimap = new mapboxgl.Minimap({
+          width: 315,
+          height: 180,
+          dragPan: false,
+          scrollZoom: false,
+          boxZoom: false,
+          dragRotate: false,
+          keyboard: false,
+          doubleClickZoom: false,
+          touchZoomRotate: false,
+          minimized: false,
+          toggleDisplay: false,
+          collapsedWidth: 20,
+          collapsedHeight: 20,
+          style: 'mapbox://styles/comuni-dados/ck87kqz1v0hlt1iptdomrfl1y',
+          center: [30.977933601001673, 1.2611668441169657],
+          zoom: 3,
+          togglePosition: 'topleft'
+        });
+
+        map.addControl(minimap, 'bottom-right');
+
       });
-
-      map.addLayer({
-        'id': 'ngetha',
-        'type': 'circle',
-        'source': 'ngetha',
-        'paint': {
-          'circle-radius': 6,
-          'circle-stroke-width': 2,
-          'circle-color': 'rgba(226, 106, 106, 0)',
-          'circle-stroke-color': 'white'
+    }
+    if ('IntersectionObserver' in window) {
+      const mapDiv = document.getElementById('map');
+      let mapLoaded = false;
+      const observer = new IntersectionObserver((entries, obs) => {
+        if (entries[0].isIntersecting && !mapLoaded) {
+          mapLoaded = true;
+          initMap();
         }
       });
-
-      map.addLayer({
-        'id': 'ngetha-labels',
-        'type': 'symbol',
-        'source': 'ngetha',
-        'layout': {
-          'text-field': ['get', 'location'],
-          'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-          //'text-radial-offset': 0.5,
-          'text-justify': 'auto',
-          'text-size': 12,
-          'text-offset': [0, -1.1]
-          //'icon-image': ['get', 'icon']
-        },
-        'paint': {
-          "text-color": "white"
-        }
-      });
-
-
-      map.addSource('extractive', {
-        type: 'geojson',
-        // Use a URL for the value for the `data` property.
-        data: './data/extractive.geojson'
-      });
-
-      map.addLayer({
-        'id': 'extractive',
-        'type': 'circle',
-        'source': 'extractive',
-        'paint': {
-          'circle-radius': 3,
-          'circle-stroke-width': 2,
-          'circle-color': 'rgba(226, 106, 106, 0)',
-          'circle-stroke-color': 'yellow'
-        }
-      });
-
-      map.addLayer({
-        'id': 'extractive-labels',
-        'type': 'symbol',
-        'source': 'extractive',
-        'layout': {
-          'text-field': ['get', 'type'],
-          'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-          //'text-radial-offset': 0.5,
-          'text-justify': 'auto',
-          'text-size': 11,
-          'text-offset': [0, -1.1]
-          //'icon-image': ['get', 'icon']
-        },
-        'paint': {
-          "text-color": "yellow"
-        }
-      });
-
-      ////////////////////////////
-      ////////////////////////////
-
-      map.moveLayer('animatedLine', 'animatedPoint');
-
-      minimap = new mapboxgl.Minimap({
-        width: 315,
-        height: 180,
-        dragPan: false,
-        scrollZoom: false,
-        boxZoom: false,
-        dragRotate: false,
-        keyboard: false,
-        doubleClickZoom: false,
-        touchZoomRotate: false,
-        minimized: false,
-        toggleDisplay: false,
-        collapsedWidth: 20,
-        collapsedHeight: 20,
-        style: 'mapbox://styles/comuni-dados/ck87kqz1v0hlt1iptdomrfl1y',
-        center: [30.977933601001673, 1.2611668441169657],
-        zoom: 3,
-        togglePosition: 'topleft'
-      });
-
-      map.addControl(minimap, 'bottom-right');
-
-    });
+      observer.observe(mapDiv);
+    } else {
+      // Fallback: initialize map immediately
+      initMap();
+    }
 
     // setup resize event
     window.addEventListener('resize', scroller.resize);
